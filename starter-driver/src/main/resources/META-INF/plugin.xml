@@ -1,0 +1,15 @@
+<!--
+  The plugin under test. It does nothing at runtime: the scenarios only need something whose id
+  can be looked up in the running IDE, so that "the plugin under test is installed and enabled"
+  is a real assertion and not a check on a bundled plugin.
+-->
+<idea-plugin>
+  <id>com.example.migration.sample</id>
+  <name>Migration Guide Sample</name>
+  <vendor>example</vendor>
+  <description><![CDATA[
+    Sample plugin used by the UI test migration guide.
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+</idea-plugin>

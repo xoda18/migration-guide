@@ -1,0 +1,26 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Kotlin
+.kotlin/
+
+# IntelliJ Platform Gradle plugin
+.intellijPlatform/
+
+# Starter and Driver test output: IDE installers, unpacked IDEs, per-run artifacts
+out/
+allure-results/
+
+# IDE state. sample-project/.idea is a fixture and stays checked in.
+/.idea/
+.junie/
+*.iws
+
+# Per-machine parts of the fixture project
+sample-project/.idea/workspace.xml
+sample-project/.idea/misc.xml
+
+# OS
+.DS_Store

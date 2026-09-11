@@ -1,0 +1,4 @@
+Sample project for the migration guide scenarios.
+
+It opens instantly and indexes in seconds, unlike a real Maven or Gradle repository,
+which keeps every scenario under a minute.

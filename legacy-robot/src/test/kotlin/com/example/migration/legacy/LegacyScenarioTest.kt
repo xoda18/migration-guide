@@ -1,0 +1,71 @@
+package com.example.migration.legacy
+
+import com.example.migration.legacy.pages.IdeaFrame
+import com.example.migration.legacy.pages.idea
+import com.example.migration.legacy.utils.RemoteRobotExtension
+import com.example.migration.legacy.utils.StepsLogger
+import com.intellij.remoterobot.RemoteRobot
+import com.intellij.remoterobot.steps.CommonSteps
+import com.intellij.remoterobot.utils.waitForIgnoringError
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.extension.ExtendWith
+import java.time.Duration
+
+/**
+ * Shared setup. The IDE is started by runIdeForUiTests, not from here, so there is nothing
+ * about the product, the version or the plugin under test in this file.
+ */
+@ExtendWith(RemoteRobotExtension::class)
+abstract class LegacyScenarioTest {
+
+  init {
+    StepsLogger.init()
+  }
+
+  protected val pluginUnderTestId = "com.example.migration.sample"
+
+  protected val sampleProjectPath: String = checkNotNull(System.getProperty("sample.project.dir")) {
+    "System property 'sample.project.dir' is not set. Run ./gradlew :legacy-robot:test"
+  }
+
+  /**
+   * Settings can only be changed once the IDE is up. Without the second call the first
+   * openProject() raises a modal dialog that blocks every later test.
+   */
+  @BeforeEach
+  fun waitForIde(remoteRobot: RemoteRobot) {
+    waitForIgnoringError(Duration.ofMinutes(3)) { remoteRobot.callJs("true") }
+    remoteRobot.runJs(
+      """
+        const settings = com.intellij.ide.GeneralSettings.getInstance()
+        settings.setConfirmOpenNewProject(com.intellij.ide.GeneralSettings.OPEN_PROJECT_SAME_WINDOW)
+        settings.setReopenLastProject(false)
+        const path = java.nio.file.Paths.get("$sampleProjectPath")
+        com.intellij.ide.impl.TrustedPaths.getInstance().setProjectPathTrusted(path, true)
+      """, true
+    )
+  }
+
+  /** The IDE outlives the test, so state has to be cleaned up by hand. */
+  @AfterEach
+  fun closeProject(remoteRobot: RemoteRobot) {
+    runCatching { CommonSteps(remoteRobot).closeProject() }
+  }
+
+  protected fun openSampleProject(remoteRobot: RemoteRobot) {
+    CommonSteps(remoteRobot).openProject(sampleProjectPath)
+    remoteRobot.awaitProjectOpen()
+    remoteRobot.idea { bringToFront() }
+  }
+
+  /**
+   * Re-finds the frame on every attempt. openProject() rebuilds the window, and a fixture looked
+   * up before the rebuild silently points at a component that no longer exists.
+   */
+  protected fun RemoteRobot.awaitProjectOpen() {
+    waitForIgnoringError(Duration.ofMinutes(5), description = "the project to open and finish indexing") {
+      find<IdeaFrame>(Duration.ofSeconds(10)).run { projectName.isNotEmpty() && isDumbMode().not() }
+    }
+  }
+}
