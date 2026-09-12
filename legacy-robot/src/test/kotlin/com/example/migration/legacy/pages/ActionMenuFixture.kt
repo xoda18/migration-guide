@@ -10,10 +10,8 @@ import com.intellij.remoterobot.search.locators.byXpath
  * The library has no fixture for a popup menu item and no way to read its label, so both the
  * locator and the getter are written here. Driver ships PopupItemUiComponent with getText().
  *
- * Two class names, not one. A leaf is an ActionMenuItem and a submenu is an ActionMenu, and in
- * robot-server @class is the simple runtime class name with no hierarchy behind it, so one name
- * cannot stand for both. Driver's byClass works the same way, which is why its own popup menu
- * wrapper spells out both as well.
+ * Two class names, because @class is the simple runtime class name: a leaf is an ActionMenuItem
+ * and a submenu is an ActionMenu, and neither name covers both.
  */
 fun RemoteRobot.allMenuItems(): List<MenuEntryFixture> =
   findAll(byXpath("all menu items", "//div[@class='ActionMenuItem' or @class='ActionMenu']"))

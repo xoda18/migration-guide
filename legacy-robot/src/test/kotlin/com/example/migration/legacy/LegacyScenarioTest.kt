@@ -48,16 +48,9 @@ abstract class LegacyScenarioTest {
   }
 
   /**
-   * The IDE outlives the test, so state has to be cleaned up by hand.
-   *
-   * closeProject() comes back once the action is queued, not once the project is gone. Without
-   * the wait the next scenario opens a project that is still on screen, passes its readiness
-   * check against the one on its way out, and then fails with AlreadyDisposedException on the
-   * first call into it. Every scenario after that one fails too, on symptoms of its own.
-   *
-   * The call itself is allowed to fail, because a scenario that left a dialog open will make it
-   * throw. The wait is not: if the project will not close, every scenario after this one is
-   * running against a broken IDE, and the scenario that made the mess should be the one to say so.
+   * The IDE outlives the test, so state has to be cleaned up by hand. closeProject() comes back
+   * once the action is queued, not once the project is gone, and the next scenario would then
+   * run against a project being disposed. Starter needs none of this: it throws the IDE away.
    */
   @AfterEach
   fun closeProject(remoteRobot: RemoteRobot) {
@@ -78,11 +71,15 @@ abstract class LegacyScenarioTest {
   }
 
   /**
-   * Re-finds the frame on every attempt. openProject() rebuilds the window, and a fixture looked
-   * up before the rebuild silently points at a component that no longer exists.
+   * All the readiness the library has: dumb mode is off, the same condition as
+   * CommonSteps.waitForSmartMode(). Anything else still running is invisible to it, so every
+   * scenario below waits for its own component by hand. Driver's waitForIndicators() also
+   * watches the status bar and requires ten quiet seconds in a row.
+   *
+   * The frame is re-found on every attempt, because openProject() rebuilds the window.
    */
   protected fun RemoteRobot.awaitProjectOpen() {
-    waitForIgnoringError(Duration.ofMinutes(15), description = "the project to open and finish indexing") {
+    waitForIgnoringError(Duration.ofMinutes(15), description = "the project to open") {
       find<IdeaFrame>(Duration.ofSeconds(30)).run { projectName.isNotEmpty() && isDumbMode().not() }
     }
   }

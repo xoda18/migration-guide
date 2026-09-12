@@ -22,10 +22,8 @@ class S2WaitForEventTest : LegacyScenarioTest() {
   fun waitForEventInsteadOfSleep(remoteRobot: RemoteRobot) = with(remoteRobot) {
     openSampleProject(this)
 
-    // 1. Invoke by action id. Not through CommonSteps: its invokeAction() passes a null context
-    // component and hardcodes now = true, and it drops the ActionCallback, so nothing happens
-    // and nothing is reported. The working version is another hand-written JavaScript string,
-    // in pages/IdeaFrame.kt.
+    // 1. Invoke by action id. Not through CommonSteps, which cannot open a popup and says
+    // nothing when it fails. See invokeAction() in pages/IdeaFrame.kt.
     idea {
       bringToFront()
       invokeAction("SearchEverywhere")
@@ -38,9 +36,8 @@ class S2WaitForEventTest : LegacyScenarioTest() {
       "//div[@class='SearchEverywhereUI' or @class='SePopupContentPane']"
     )
 
-    // The call above reports nothing when it opens no popup, so the only way to find out is to
-    // look, and the only way to recover is to ask again. Driver reads the ActionCallback that
-    // invokeAction() returns and fails on the spot.
+    // Nothing reports a popup that never opened, so the only way to recover is to ask again.
+    // Driver reads the ActionCallback and fails on the spot.
     waitForIgnoringError(
       Duration.ofSeconds(180),
       description = "the Search Everywhere popup",
@@ -53,11 +50,9 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     }
     val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(30))
 
-    // 2. Switch to the Actions tab. On the All tab this query also matches the contents of files,
-    // and such a result is clickable exactly like the action, so step 5 would pick whichever of
-    // the two arrived first. The tab here is a piece of rendered text to click, and the only way
-    // to read back which tab won is another JavaScript call. Driver has selectTab() and a typed
-    // getSelectedTab() returning an enum.
+    // 2. Switch to the Actions tab. On the All tab the query also matches file contents, and
+    // such a result is clickable exactly like the action. The tab is rendered text to click, and
+    // reading back which one won takes JavaScript. Driver has selectTab() and getSelectedTab().
     popup.findText("Actions").click()
     waitForIgnoringError(
       Duration.ofSeconds(90),

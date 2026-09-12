@@ -1,12 +1,3 @@
-"""Turn the JUnit XML of whichever module this job built into the run summary.
-
-Without this the Actions page shows only a green or red mark, and a build that ran no
-tests at all looks exactly like a build where every scenario passed.
-
-When the screen recording is on, each row also carries the point in screen.mp4 where that
-scenario starts, so a twelve minute video does not have to be watched from the beginning.
-"""
-
 import datetime
 import glob
 import subprocess
@@ -14,7 +5,6 @@ import xml.etree.ElementTree as ElementTree
 
 
 def recording_start():
-    """Epoch second at which ffmpeg began, or None when nothing was recorded."""
     try:
         with open("ffmpeg.start") as handle:
             return float(handle.read().strip())
@@ -23,7 +13,6 @@ def recording_start():
 
 
 def offset(timestamp, start):
-    """Position of this scenario in the recording, as mm:ss."""
     if start is None or not timestamp:
         return ""
     try:

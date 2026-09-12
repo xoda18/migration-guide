@@ -24,8 +24,7 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
 
     idea {
       openFile("src/Main.java")
-      // Wait for the component the right click needs, not for a different one. textEditor()
-      // brings its own five second search, which no wait before it can make longer.
+      // textEditor() carries its own five second search, so wait for the same component.
       waitForIgnoringError(
         Duration.ofSeconds(180),
         description = "the editor to open",
@@ -39,11 +38,9 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
       textEditor(Duration.ofSeconds(90)).editor.rightClick()
     }
 
-    // 2 and 3. In Legacy the popup is not available as a separate object. After the right click,
-    // its items appear as top-level UI components, so the helpers search from remoteRobot across
-    // all open UI windows. allMenuItems() and allSubmenus() are defined in
-    // pages/ActionMenuFixture.kt together with their XPath locators. Both helpers are first used
-    // in step 4 below.
+    // 2 and 3. There is no popup object here. The entries are top level components, so the
+    // search starts from remoteRobot and crosses every open window. allMenuItems() and
+    // allSubmenus() live in pages/ActionMenuFixture.kt and are first used in step 4.
 
     // 4. Poll the submenus with a predicate.
     waitForIgnoringError(Duration.ofSeconds(90), description = "the Paste submenu") {

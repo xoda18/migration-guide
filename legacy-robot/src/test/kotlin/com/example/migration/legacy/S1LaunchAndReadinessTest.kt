@@ -27,8 +27,8 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
     // 3. Is the plugin loaded? isPluginEnabled() is a hand-written JS string in pages/IdeaFrame.kt.
     assertTrue(isPluginEnabled(pluginUnderTestId)) { "$pluginUnderTestId was not loaded" }
 
-    // 4. Wait for the project and indexing. Dumb mode is the only readiness flag there is.
-    // Must happen before any fixture lookup, see awaitProjectOpen().
+    // 4. Wait for the project and indexing. Dumb mode is all the library knows, and it has to
+    // happen before any fixture lookup. See awaitProjectOpen().
     awaitProjectOpen()
 
     idea(Duration.ofMinutes(6)) {
@@ -36,27 +36,17 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       assertTrue(projectName.isNotEmpty()) { "No project is open" }
       bringToFront()
 
-      // 6. Open the Project View by clicking the stripe button.
-      // Not by action id: CommonSteps.invokeAction() passes a null context component, so the
-      // action is resolved against whatever holds the focus, and ActivateProjectToolWindow does
-      // nothing. It reports nothing either, because the ActionCallback is discarded. See
-      // pages/IdeaFrame.kt for the version that works and why.
-      // The click is a toggle, and the IDE is still restoring its own layout while the project
-      // opens, so reading the state once and clicking once can land on the wrong side. Click
-      // again for as long as the panel is still closed. Driver has nothing to guard here,
-      // because open() opens and does not toggle.
-      waitForIgnoringError(
-        Duration.ofSeconds(180),
-        description = "the Project tool window to open",
-        errorMessage = "the Project tool window stayed closed"
-      ) {
-        if (isProjectToolWindowVisible().not()) projectStripeButton.click()
-        isProjectToolWindowVisible()
+      // 6. Open the Project View by clicking the Project button on the left toolbar. The action
+      // id would be shorter, but CommonSteps.invokeAction() gives the action no component to read
+      // the project from, so it does nothing and reports no error. The button is a switch, hence
+      // the check before the click. Driver calls projectButton.open(), which only opens.
+      if (isProjectToolWindowVisible().not()) {
+        projectStripeButton.click()
       }
 
       // The tree cannot be asked whether its nodes are loaded, so poll for rows.
-      // waitForIgnoringError(), not waitFor(): a fixture lookup throws when the component is not
-      // there yet, and plain waitFor() does not catch.
+      // waitForIgnoringError(), not waitFor(): a fixture lookup throws while the component is
+      // missing, and plain waitFor() does not catch.
       waitForIgnoringError(
         Duration.ofSeconds(90),
         description = "the project tree to have rows",
@@ -65,10 +55,8 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
         projectViewTree.collectRows().isNotEmpty()
       }
 
-      // 7. Expand src.
-      // The root node carries two pieces of text, the project name and its location on disk,
-      // and they are read back as one label: "sample-project ~/IdeaProjects".
-      // expand(vararg path) compares labels exactly, so it cannot address the root. Only
+      // 7. Expand src. The root label reads back as one string, "sample-project ~/IdeaProjects",
+      // and expand(vararg path) compares labels exactly, so it cannot address the root. Only
       // collapsePath() and the click methods take fullMatch, which leaves a double click.
       waitForIgnoringError(Duration.ofSeconds(90), description = "the src folder to appear") {
         projectViewTree.isPathExists("sample-project", "src", fullMatch = false)
@@ -88,11 +76,9 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // 9. Open the file with a real double click.
       projectViewTree.doubleClickPath("sample-project", "src", "Main", fullMatch = false)
 
-      // 10. The right file opened. There is no editor tabs fixture, so this goes through the
-      // editor, and the file name behind it is another JS call.
-      // Wait for the component the next line asks for. textEditor() looks for
-      // PsiAwareTextEditorComponent and brings its own five second search, so waiting for
-      // EditorComponentImpl instead would prove nothing about it.
+      // 10. The right file opened. There is no editor tabs fixture, so this asks the editor for
+      // its file name through another JS call. textEditor() carries its own five second search,
+      // so the wait before it looks for the same component.
       waitForIgnoringError(Duration.ofSeconds(90), description = "the editor to open") {
         textEditors().isNotEmpty()
       }

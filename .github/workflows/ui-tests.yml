@@ -1,9 +1,8 @@
 name: UI tests
 
 on:
-  # 02:17 UTC. Not on the hour: GitHub delays scheduled runs at peak times, and the
-  # top of every hour is a peak. Note that GitHub disables the schedule by itself
-  # after 60 days without activity in a public repository.
+  push:
+    branches: [main]
   schedule:
     - cron: "17 2 * * *"
   workflow_dispatch:
@@ -13,7 +12,7 @@ permissions:
 
 concurrency:
   group: ui-tests
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   starter-driver:
@@ -32,10 +31,6 @@ jobs:
 
       - name: Start a virtual screen
         run: |
-          # The runner has no monitor. Xvfb is a real X server that draws into memory,
-          # which is what the IDE connects to and what java.awt.Robot moves the pointer on.
-          # fluxbox is a minimal window manager: without one, X never hands the IDE window
-          # the keyboard focus, and every action resolved against the focused component fails.
           sudo apt-get update -qq
           sudo apt-get install -y -qq fluxbox ffmpeg
           Xvfb :99 -screen 0 1920x1080x24 &
@@ -111,8 +106,6 @@ jobs:
 
       - name: Start the IDE with robot-server
         run: |
-          # This is the first of the two terminals from the README. The IDE outlives the
-          # test JVM, so it runs in the background and the next step waits for its port.
           nohup ./gradlew :legacy-robot:runIdeForUiTests > ide.log 2>&1 &
           echo $! > ide.pid
           timeout 600 bash -c \
