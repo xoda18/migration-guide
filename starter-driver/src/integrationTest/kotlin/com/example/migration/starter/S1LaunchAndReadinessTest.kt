@@ -6,12 +6,14 @@ import com.intellij.driver.sdk.ui.components.common.codeEditorForFile
 import com.intellij.driver.sdk.ui.components.common.editorTabs
 import com.intellij.driver.sdk.ui.components.common.ideFrame
 import com.intellij.driver.sdk.ui.components.common.toolwindows.projectView
+import com.intellij.driver.sdk.waitFor
 import com.intellij.driver.sdk.waitForIndicators
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 /** S1. Launch the IDE, open a project, install the plugin, wait until it is ready. */
 class S1LaunchAndReadinessTest : StarterScenarioTest() {
@@ -61,10 +63,14 @@ class S1LaunchAndReadinessTest : StarterScenarioTest() {
 
         // 11. Collapse and check the tree state really changed.
         projectView {
-          val before = projectViewTree.collectExpandedPathsAsStrings()
+          val before = projectViewTree.collectExpandedPathsAsStrings().size
+          // expandPath() settles by itself, it calls waitForNodesLoaded() around every segment.
+          // collapsePath() is one call to the EDT and returns before the tree has redrawn, so
+          // reading the rows on the next line raced it and CI caught the read coming back early.
           projectViewTree.collapsePath("sample-project", "src", fullMatch = false)
-          val after = projectViewTree.collectExpandedPathsAsStrings()
-          assertTrue(after.size < before.size) { "The tree did not collapse, was ${before.size}, now ${after.size}" }
+          waitFor("the tree to collapse below $before rows", 15.seconds) {
+            projectViewTree.collectExpandedPathsAsStrings().size < before
+          }
         }
       }
     }

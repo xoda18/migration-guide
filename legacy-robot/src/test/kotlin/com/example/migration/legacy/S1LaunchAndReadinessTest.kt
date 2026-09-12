@@ -44,16 +44,29 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // action is resolved against whatever holds the focus, and ActivateProjectToolWindow does
       // nothing. It reports nothing either, because the ActionCallback is discarded. See
       // pages/IdeaFrame.kt for the version that works and what had to change in it.
-      // The click is a toggle and the IDE outlives the test, so guard on visibility.
-      if (isProjectToolWindowVisible().not()) {
-        projectStripeButton.click()
+      // The click is a toggle, and the IDE both outlives the test and is still restoring its own
+      // layout while the project opens. Reading the state once and clicking once can therefore
+      // land on the wrong side: a run on CI left the panel closed and never built the tree. So
+      // click again for as long as it is still closed. Driver has nothing to guard here, because
+      // open() opens and does not toggle.
+      waitForIgnoringError(
+        Duration.ofSeconds(60),
+        description = "the Project tool window to open",
+        errorMessage = "the Project tool window stayed closed"
+      ) {
+        if (isProjectToolWindowVisible().not()) projectStripeButton.click()
+        isProjectToolWindowVisible()
       }
 
       // The tree cannot be asked whether its nodes are loaded, so poll for rows.
       // waitForIgnoringError(), not waitFor(): a fixture lookup throws when the component is not
       // there yet, and plain waitFor() does not catch.
-      waitForIgnoringError(Duration.ofSeconds(60), description = "the project tree to have rows") {
-        isProjectToolWindowVisible() && projectViewTree.collectRows().isNotEmpty()
+      waitForIgnoringError(
+        Duration.ofSeconds(30),
+        description = "the project tree to have rows",
+        errorMessage = "the project tree never got any rows"
+      ) {
+        projectViewTree.collectRows().isNotEmpty()
       }
 
       // 7. Expand src.

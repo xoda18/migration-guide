@@ -8,12 +8,13 @@ import com.intellij.remoterobot.fixtures.CommonContainerFixture
 import com.intellij.remoterobot.fixtures.ComponentFixture
 import com.intellij.remoterobot.search.locators.byXpath
 import com.intellij.remoterobot.utils.waitFor
+import com.intellij.remoterobot.utils.waitForIgnoringError
 import org.junit.jupiter.api.Test
 import java.time.Duration
 
 /**
  * S2. Wait for an event instead of sleeping. Same idea as the Driver side, except every wait
- * has to be written out: there is no shouldBe() and no waitForNoOpenedDialogs().
+ * has to be written out: there is no shouldBe(), and no handle on the dialog to check again.
  */
 class S2WaitForEventTest : LegacyScenarioTest() {
 
@@ -32,13 +33,25 @@ class S2WaitForEventTest : LegacyScenarioTest() {
 
     // Two class names: Search Everywhere is either the old SearchEverywhereUI or the new
     // SePopupContentPane depending on the build. Driver hides this behind searchEverywherePopup.
-    val popup = find<CommonContainerFixture>(
-      byXpath(
-        "SearchEverywhere popup",
-        "//div[@class='SearchEverywhereUI' or @class='SePopupContentPane']"
-      ),
-      Duration.ofSeconds(30)
+    val popupLocator = byXpath(
+      "SearchEverywhere popup",
+      "//div[@class='SearchEverywhereUI' or @class='SePopupContentPane']"
     )
+
+    // The call above reports nothing when it opens no popup, so the only way to find out is to
+    // look, and the only way to recover is to ask again. A run on CI produced no popup at all.
+    // Driver reads the ActionCallback that invokeAction() returns and fails on the spot.
+    waitForIgnoringError(
+      Duration.ofSeconds(60),
+      description = "the Search Everywhere popup",
+      errorMessage = "the Search Everywhere popup never opened"
+    ) {
+      if (findAll<CommonContainerFixture>(popupLocator).isEmpty()) {
+        idea { invokeAction("SearchEverywhere") }
+      }
+      findAll<CommonContainerFixture>(popupLocator).isNotEmpty()
+    }
+    val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(10))
 
     // 2. Set the text on the component instead of typing it.
     val searchField = popup.find<ComponentFixture>(byXpath("SearchField", "//div[@class='SearchField']"))

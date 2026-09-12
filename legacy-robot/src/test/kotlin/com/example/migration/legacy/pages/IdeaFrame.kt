@@ -9,6 +9,7 @@ import com.intellij.remoterobot.fixtures.FixtureName
 import com.intellij.remoterobot.fixtures.JTreeFixture
 import com.intellij.remoterobot.search.locators.byXpath
 import com.intellij.remoterobot.stepsProcessing.step
+import com.intellij.remoterobot.utils.waitFor
 import java.time.Duration
 
 fun RemoteRobot.idea(timeout: Duration = Duration.ofMinutes(1), function: IdeaFrame.() -> Unit) {
@@ -65,10 +66,18 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
    */
   fun bringToFront() {
     runJs("component.toFront(); component.requestFocus()", true)
-    // The one sleep in this repository. Raising a window is a request to the window manager and
-    // it answers when it likes; component.isActive() never turns true because macOS does not
-    // hand activation to a background application. There is no event to wait for.
-    Thread.sleep(500)
+    // Raising a window is a request to the window manager, and it answers when it likes. Where it
+    // answers at all, wait for the answer. On macOS it never comes, because the system does not
+    // hand activation to a background application and isActive() stays false, so the wait is short
+    // and its result is not asserted. A fixed sleep was here before and it was too short on CI:
+    // the click in S1 and the action in S2 both went out while the window was still coming up.
+    runCatching {
+      waitFor(
+        Duration.ofSeconds(10),
+        Duration.ofMillis(200),
+        description = "the IDE window to become active"
+      ) { callJs<Boolean>("component.isActive()", true) }
+    }
   }
 
   /**
