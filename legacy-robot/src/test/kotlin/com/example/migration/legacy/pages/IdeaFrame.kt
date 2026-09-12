@@ -53,10 +53,9 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
   /**
    * The class name changed between the classic and the new UI, so both are accepted.
    *
-   * A minute is a lot for a button that is already on screen, and it is deliberate. Every search
-   * walks the component tree on the event thread, so while the IDE is busy opening a project the
-   * answer simply does not come back. Twenty seconds was not enough for that on CI, and the
-   * screenshot taken when it ran out showed the button sitting there.
+   * The timeout is long for a button that is already on screen, and it is deliberate. Every
+   * search walks the component tree on the event thread, so while the IDE is busy opening a
+   * project the answer does not come back, however visible the button is.
    */
   val projectStripeButton: ComponentFixture
     get() = find(
@@ -74,10 +73,10 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
   fun bringToFront() {
     runJs("component.toFront(); component.requestFocus()", true)
     // Raising a window is a request to the window manager, and it answers when it likes. Where it
-    // answers at all, wait for the answer. On macOS it never comes, because the system does not
-    // hand activation to a background application and isActive() stays false, so the wait is short
-    // and its result is not asserted. A fixed sleep was here before and it was too short on CI:
-    // the click in S1 and the action in S2 both went out while the window was still coming up.
+    // answers at all, wait for the answer instead of sleeping: a fixed pause is either too short,
+    // and the next click goes out while the window is still coming up, or wasted. On macOS the
+    // answer never comes, because the system does not hand activation to a background application
+    // and isActive() stays false, so the wait is bounded and its result is not asserted.
     runCatching {
       waitFor(
         Duration.ofSeconds(10),
@@ -140,15 +139,15 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
    * The replacement for CommonSteps.invokeAction, which cannot open a popup. Actions that only
    * change state, CloseProject in the @AfterEach for instance, work fine through CommonSteps.
    *
-   * The difference that was shown to decide it is the last argument, 'now'. CommonSteps
-   * hardcodes true, which runs the action synchronously inside this call while the focus
-   * machinery is still in flight, and a popup opened that way is built and then dropped: the
-   * window object exists and isShowing() never turns true. With false the action is queued the
-   * way a real keystroke is, and the popup comes up and stays.
+   * The argument that decides it is the last one, 'now'. CommonSteps hardcodes true, which runs
+   * the action synchronously inside this call while the focus machinery is still in flight, and
+   * a popup opened that way is built and then dropped: the window object exists and isShowing()
+   * never turns true. With false the action is queued the way a real keystroke is, and the popup
+   * comes up and stays.
    *
-   * The context component is passed explicitly as well, rather than left null. That one was not
-   * isolated, but a null component is what makes an action resolve against whatever holds the
-   * focus, and that is already what stops the stripe button action in S1.
+   * The context component is passed explicitly as well, rather than left null. A null component
+   * makes an action resolve against whatever holds the focus, which is what stops
+   * ActivateProjectToolWindow in S1.
    *
    * Neither case is a refusal. The ActionCallback comes back with isRejected() false and a null
    * error, so there is nothing to catch. And CommonSteps discards that callback anyway, which is

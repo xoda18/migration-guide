@@ -66,7 +66,7 @@ class S1LaunchAndReadinessTest : StarterScenarioTest() {
           val before = projectViewTree.collectExpandedPathsAsStrings().size
           // expandPath() settles by itself, it calls waitForNodesLoaded() around every segment.
           // collapsePath() is one call to the EDT and returns before the tree has redrawn, so
-          // reading the rows on the next line raced it and CI caught the read coming back early.
+          // reading the rows on the next line would race it.
           projectViewTree.collapsePath("sample-project", "src", fullMatch = false)
           waitFor("the tree to collapse below $before rows", 45.seconds) {
             projectViewTree.collectExpandedPathsAsStrings().size < before

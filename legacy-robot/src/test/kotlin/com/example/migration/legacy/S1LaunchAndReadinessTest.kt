@@ -40,12 +40,11 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // Not by action id: CommonSteps.invokeAction() passes a null context component, so the
       // action is resolved against whatever holds the focus, and ActivateProjectToolWindow does
       // nothing. It reports nothing either, because the ActionCallback is discarded. See
-      // pages/IdeaFrame.kt for the version that works and what had to change in it.
-      // The click is a toggle, and the IDE both outlives the test and is still restoring its own
-      // layout while the project opens. Reading the state once and clicking once can therefore
-      // land on the wrong side: a run on CI left the panel closed and never built the tree. So
-      // click again for as long as it is still closed. Driver has nothing to guard here, because
-      // open() opens and does not toggle.
+      // pages/IdeaFrame.kt for the version that works and why.
+      // The click is a toggle, and the IDE is still restoring its own layout while the project
+      // opens, so reading the state once and clicking once can land on the wrong side. Click
+      // again for as long as the panel is still closed. Driver has nothing to guard here,
+      // because open() opens and does not toggle.
       waitForIgnoringError(
         Duration.ofSeconds(180),
         description = "the Project tool window to open",
@@ -91,9 +90,9 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
 
       // 10. The right file opened. There is no editor tabs fixture, so this goes through the
       // editor, and the file name behind it is another JS call.
-      // textEditor() carries its own five second default, which no amount of waiting here would
-      // cover: this waited for EditorComponentImpl and then asked for a different class. The same
-      // mismatch is what kept failing S3, so both sides of it are spelled out.
+      // Wait for the component the next line asks for. textEditor() looks for
+      // PsiAwareTextEditorComponent and brings its own five second search, so waiting for
+      // EditorComponentImpl instead would prove nothing about it.
       waitForIgnoringError(Duration.ofSeconds(90), description = "the editor to open") {
         textEditors().isNotEmpty()
       }

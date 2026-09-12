@@ -52,10 +52,8 @@ abstract class LegacyScenarioTest {
    *
    * closeProject() comes back once the action is queued, not once the project is gone. Without
    * the wait the next scenario opens a project that is still on screen, passes its readiness
-   * check against the one on its way out, and then fails on the first call into it. CI caught
-   * exactly that: the IDE logged AlreadyDisposedException for FileEditorManager 0.7 seconds
-   * into the following scenario, with "Last Action: CloseProject" beside it, and the three
-   * scenarios after it failed on symptoms that had nothing to do with their own code.
+   * check against the one on its way out, and then fails with AlreadyDisposedException on the
+   * first call into it. Every scenario after that one fails too, on symptoms of its own.
    *
    * The call itself is allowed to fail, because a scenario that left a dialog open will make it
    * throw. The wait is not: if the project will not close, every scenario after this one is

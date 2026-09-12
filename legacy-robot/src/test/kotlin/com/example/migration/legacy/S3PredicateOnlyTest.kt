@@ -25,9 +25,7 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
     idea {
       openFile("src/Main.java")
       // Wait for the component the right click needs, not for a different one. textEditor()
-      // defaults to a five second search, and that is short for a machine under load: on CI it
-      // ran out while the editor was still coming up, and the screenshot taken at that moment
-      // already showed the file open.
+      // brings its own five second search, which no wait before it can make longer.
       waitForIgnoringError(
         Duration.ofSeconds(180),
         description = "the editor to open",

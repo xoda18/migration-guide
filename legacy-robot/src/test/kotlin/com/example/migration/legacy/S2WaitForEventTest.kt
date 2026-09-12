@@ -39,8 +39,8 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     )
 
     // The call above reports nothing when it opens no popup, so the only way to find out is to
-    // look, and the only way to recover is to ask again. A run on CI produced no popup at all.
-    // Driver reads the ActionCallback that invokeAction() returns and fails on the spot.
+    // look, and the only way to recover is to ask again. Driver reads the ActionCallback that
+    // invokeAction() returns and fails on the spot.
     waitForIgnoringError(
       Duration.ofSeconds(180),
       description = "the Search Everywhere popup",
@@ -54,10 +54,10 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(30))
 
     // 2. Switch to the Actions tab. On the All tab this query also matches the contents of files,
-    // and such a result is clickable exactly like the action: a run on CI opened maven-4.0.0.xsd
-    // at the line that happens to contain the word. The tab here is a piece of rendered text to
-    // click, and the only way to read back which tab won is another JavaScript call. Driver has
-    // selectTab() and a typed getSelectedTab() returning an enum.
+    // and such a result is clickable exactly like the action, so step 5 would pick whichever of
+    // the two arrived first. The tab here is a piece of rendered text to click, and the only way
+    // to read back which tab won is another JavaScript call. Driver has selectTab() and a typed
+    // getSelectedTab() returning an enum.
     popup.findText("Actions").click()
     waitForIgnoringError(
       Duration.ofSeconds(90),
