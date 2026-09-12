@@ -23,15 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Free disk space
-        run: |
-          # One IDE distribution is 1.6 GB and Starter unpacks a copy of it per test,
-          # so the toolchains that come with the runner image have to go first.
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
-                      /usr/local/share/boost /opt/hostedtoolcache/CodeQL || true
-          docker image prune -af || true
-          df -h /
-
       - uses: actions/setup-java@v4
         with:
           java-version: "21"
@@ -55,18 +46,16 @@ jobs:
       - name: Run the scenarios
         run: ./gradlew :starter-driver:integrationTest
 
-      - name: Disk space after the run
+      - name: Summarise
         if: always()
-        run: df -h /
+        run: python3 .github/scripts/summarise_tests.py >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Collect test reports
-        if: failure()
+      - name: Collect test results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: starter-driver-reports
-          path: |
-            starter-driver/build/reports/
-            starter-driver/build/test-results/
+          name: starter-driver-results
+          path: starter-driver/build/test-results/
           if-no-files-found: ignore
 
       - name: Collect IDE logs and screenshots
@@ -74,7 +63,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: starter-driver-ide-output
+          include-hidden-files: true
           path: |
+            starter-driver/build/reports/
             starter-driver/out/ide-tests/tests/**/log/**
             starter-driver/out/ide-tests/tests/**/*.png
           if-no-files-found: ignore
@@ -85,13 +76,6 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
-                      /usr/local/share/boost /opt/hostedtoolcache/CodeQL || true
-          docker image prune -af || true
-          df -h /
 
       - uses: actions/setup-java@v4
         with:
@@ -123,26 +107,28 @@ jobs:
 
       - name: Stop the IDE
         if: always()
-        run: |
-          kill "$(cat ide.pid)" 2> /dev/null || true
-          df -h /
+        run: kill "$(cat ide.pid)" 2> /dev/null || true
 
-      - name: Collect test reports
-        if: failure()
+      - name: Summarise
+        if: always()
+        run: python3 .github/scripts/summarise_tests.py >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect test results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: legacy-robot-reports
-          path: |
-            legacy-robot/build/reports/
-            legacy-robot/build/test-results/
+          name: legacy-robot-results
+          path: legacy-robot/build/test-results/
           if-no-files-found: ignore
 
-      - name: Collect the IDE output
+      - name: Collect IDE logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: legacy-robot-ide-output
+          include-hidden-files: true
           path: |
             ide.log
+            legacy-robot/build/reports/
             .intellijPlatform/sandbox/**/log/**
           if-no-files-found: ignore
