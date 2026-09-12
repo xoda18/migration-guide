@@ -4,10 +4,7 @@ import com.example.migration.legacy.pages.allMenuItems
 import com.example.migration.legacy.pages.allSubmenus
 import com.example.migration.legacy.pages.idea
 import com.intellij.remoterobot.RemoteRobot
-import com.intellij.remoterobot.fixtures.ComponentFixture
-import com.intellij.remoterobot.search.locators.byXpath
 import com.intellij.remoterobot.utils.keyboard
-import com.intellij.remoterobot.utils.waitFor
 import com.intellij.remoterobot.utils.waitForIgnoringError
 import org.junit.jupiter.api.Test
 import java.time.Duration
@@ -27,13 +24,17 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
 
     idea {
       openFile("src/Main.java")
-      waitFor(Duration.ofSeconds(30), description = "the editor to open") {
-        findAll<ComponentFixture>(byXpath("//div[@class='EditorComponentImpl']")).isNotEmpty()
+      // Wait for the component the right click needs, not for a different one. textEditor()
+      // defaults to a five second search, and that is short for a machine under load: on CI it
+      // ran out while the editor was still coming up, and the screenshot taken at that moment
+      // already showed the file open.
+      waitForIgnoringError(Duration.ofSeconds(60), description = "the editor to open") {
+        textEditors().isNotEmpty()
       }
       bringToFront()
 
       // 1. Open the context menu with a real right click.
-      textEditor().editor.rightClick()
+      textEditor(Duration.ofSeconds(30)).editor.rightClick()
     }
 
     // 2 and 3. In Legacy the popup is not available as a separate object. After the right click,

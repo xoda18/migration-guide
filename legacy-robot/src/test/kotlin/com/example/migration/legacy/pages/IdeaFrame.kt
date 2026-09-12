@@ -50,14 +50,21 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
   val projectName: String
     get() = step("Get project name") { return@step callJs("component.getProject().getName()") }
 
-  /** The class name changed between the classic and the new UI, so both are accepted. */
+  /**
+   * The class name changed between the classic and the new UI, so both are accepted.
+   *
+   * A minute is a lot for a button that is already on screen, and it is deliberate. Every search
+   * walks the component tree on the event thread, so while the IDE is busy opening a project the
+   * answer simply does not come back. Twenty seconds was not enough for that on CI, and the
+   * screenshot taken when it ran out showed the button sitting there.
+   */
   val projectStripeButton: ComponentFixture
     get() = find(
       byXpath(
         "Project stripe button",
         "//div[(@class='SquareStripeButton' or @class='StripeButton') and @accessiblename='Project']"
       ),
-      Duration.ofSeconds(20)
+      Duration.ofSeconds(60)
     )
 
   /**
