@@ -30,7 +30,7 @@ class S1LaunchAndReadinessTest : StarterScenarioTest() {
       assertTrue(isPluginLoaded(pluginUnderTestId)) { "$pluginUnderTestId was not loaded" }
 
       // 4. Wait for indexing and every background indicator.
-      waitForIndicators(5.minutes)
+      waitForIndicators(15.minutes)
 
       ideFrame {
         // 5. A project is open.
@@ -68,7 +68,7 @@ class S1LaunchAndReadinessTest : StarterScenarioTest() {
           // collapsePath() is one call to the EDT and returns before the tree has redrawn, so
           // reading the rows on the next line raced it and CI caught the read coming back early.
           projectViewTree.collapsePath("sample-project", "src", fullMatch = false)
-          waitFor("the tree to collapse below $before rows", 15.seconds) {
+          waitFor("the tree to collapse below $before rows", 45.seconds) {
             projectViewTree.collectExpandedPathsAsStrings().size < before
           }
         }

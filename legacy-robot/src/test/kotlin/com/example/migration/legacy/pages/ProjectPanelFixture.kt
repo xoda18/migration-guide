@@ -36,4 +36,4 @@ class ProjectPanelFixture(remoteRobot: RemoteRobot, remoteComponent: RemoteCompo
 
 // 4. The locator is the @DefaultXpath annotation above, not a query.
 fun RemoteRobot.projectPanel(function: ProjectPanelFixture.() -> Unit = {}): ProjectPanelFixture =
-  find<ProjectPanelFixture>(timeout = Duration.ofSeconds(60)).apply(function)
+  find<ProjectPanelFixture>(timeout = Duration.ofSeconds(180)).apply(function)

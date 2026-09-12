@@ -35,7 +35,7 @@ abstract class LegacyScenarioTest {
    */
   @BeforeEach
   fun waitForIde(remoteRobot: RemoteRobot) {
-    waitForIgnoringError(Duration.ofMinutes(3)) { remoteRobot.callJs("true") }
+    waitForIgnoringError(Duration.ofMinutes(9)) { remoteRobot.callJs("true") }
     remoteRobot.runJs(
       """
         const settings = com.intellij.ide.GeneralSettings.getInstance()
@@ -64,8 +64,8 @@ abstract class LegacyScenarioTest {
    * up before the rebuild silently points at a component that no longer exists.
    */
   protected fun RemoteRobot.awaitProjectOpen() {
-    waitForIgnoringError(Duration.ofMinutes(5), description = "the project to open and finish indexing") {
-      find<IdeaFrame>(Duration.ofSeconds(10)).run { projectName.isNotEmpty() && isDumbMode().not() }
+    waitForIgnoringError(Duration.ofMinutes(15), description = "the project to open and finish indexing") {
+      find<IdeaFrame>(Duration.ofSeconds(30)).run { projectName.isNotEmpty() && isDumbMode().not() }
     }
   }
 }

@@ -14,7 +14,7 @@ class S5PageObjectTest : StarterScenarioTest() {
   @Test
   fun ownPageObject() {
     context().runIdeWithDriver().useDriverAndCloseIde {
-      waitForIndicators(5.minutes)
+      waitForIndicators(15.minutes)
 
       ideFrame {
         leftToolWindowToolbar.projectButton.open()

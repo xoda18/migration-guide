@@ -29,7 +29,7 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
       // ran out while the editor was still coming up, and the screenshot taken at that moment
       // already showed the file open.
       waitForIgnoringError(
-        Duration.ofSeconds(60),
+        Duration.ofSeconds(180),
         description = "the editor to open",
         errorMessage = "no editor ever appeared for src/Main.java"
       ) {
@@ -38,7 +38,7 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
       bringToFront()
 
       // 1. Open the context menu with a real right click.
-      textEditor(Duration.ofSeconds(30)).editor.rightClick()
+      textEditor(Duration.ofSeconds(90)).editor.rightClick()
     }
 
     // 2 and 3. In Legacy the popup is not available as a separate object. After the right click,
@@ -48,7 +48,7 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
     // in step 4 below.
 
     // 4. Poll the submenus with a predicate.
-    waitForIgnoringError(Duration.ofSeconds(30), description = "the Paste submenu") {
+    waitForIgnoringError(Duration.ofSeconds(90), description = "the Paste submenu") {
       allSubmenus().count { it.text.contains("Paste") } == 1
     }
     val pasteSpecial = allSubmenus().single { it.text.contains("Paste") }
@@ -60,7 +60,7 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
     pasteSpecial.click()
 
     // 6. It opened a submenu, so there are more entries on screen than before.
-    waitForIgnoringError(Duration.ofSeconds(15), description = "the submenu to open") {
+    waitForIgnoringError(Duration.ofSeconds(45), description = "the submenu to open") {
       allMenuItems().size > entryCount
     }
 

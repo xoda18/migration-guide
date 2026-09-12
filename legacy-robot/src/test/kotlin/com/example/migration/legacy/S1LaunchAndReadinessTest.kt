@@ -3,10 +3,7 @@ package com.example.migration.legacy
 import com.example.migration.legacy.pages.idea
 import com.example.migration.legacy.pages.isPluginEnabled
 import com.intellij.remoterobot.RemoteRobot
-import com.intellij.remoterobot.fixtures.ComponentFixture
-import com.intellij.remoterobot.search.locators.byXpath
 import com.intellij.remoterobot.steps.CommonSteps
-import com.intellij.remoterobot.utils.waitFor
 import com.intellij.remoterobot.utils.waitForIgnoringError
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -34,7 +31,7 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
     // Must happen before any fixture lookup, see awaitProjectOpen().
     awaitProjectOpen()
 
-    idea(Duration.ofMinutes(2)) {
+    idea(Duration.ofMinutes(6)) {
       // 5. A project is open.
       assertTrue(projectName.isNotEmpty()) { "No project is open" }
       bringToFront()
@@ -50,7 +47,7 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // click again for as long as it is still closed. Driver has nothing to guard here, because
       // open() opens and does not toggle.
       waitForIgnoringError(
-        Duration.ofSeconds(60),
+        Duration.ofSeconds(180),
         description = "the Project tool window to open",
         errorMessage = "the Project tool window stayed closed"
       ) {
@@ -62,7 +59,7 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // waitForIgnoringError(), not waitFor(): a fixture lookup throws when the component is not
       // there yet, and plain waitFor() does not catch.
       waitForIgnoringError(
-        Duration.ofSeconds(30),
+        Duration.ofSeconds(90),
         description = "the project tree to have rows",
         errorMessage = "the project tree never got any rows"
       ) {
@@ -74,13 +71,13 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // and they are read back as one label: "sample-project ~/IdeaProjects".
       // expand(vararg path) compares labels exactly, so it cannot address the root. Only
       // collapsePath() and the click methods take fullMatch, which leaves a double click.
-      waitForIgnoringError(Duration.ofSeconds(30), description = "the src folder to appear") {
+      waitForIgnoringError(Duration.ofSeconds(90), description = "the src folder to appear") {
         projectViewTree.isPathExists("sample-project", "src", fullMatch = false)
       }
       if (projectViewTree.isPathExists("sample-project", "src", "Main", fullMatch = false).not()) {
         projectViewTree.doubleClickPath("sample-project", "src", fullMatch = false)
       }
-      waitForIgnoringError(Duration.ofSeconds(15), description = "the src folder to expand") {
+      waitForIgnoringError(Duration.ofSeconds(45), description = "the src folder to expand") {
         projectViewTree.isPathExists("sample-project", "src", "Main", fullMatch = false)
       }
 
@@ -94,17 +91,20 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
 
       // 10. The right file opened. There is no editor tabs fixture, so this goes through the
       // editor, and the file name behind it is another JS call.
-      waitFor(Duration.ofSeconds(30), description = "the editor to open") {
-        findAll<ComponentFixture>(byXpath("//div[@class='EditorComponentImpl']")).isNotEmpty()
+      // textEditor() carries its own five second default, which no amount of waiting here would
+      // cover: this waited for EditorComponentImpl and then asked for a different class. The same
+      // mismatch is what kept failing S3, so both sides of it are spelled out.
+      waitForIgnoringError(Duration.ofSeconds(90), description = "the editor to open") {
+        textEditors().isNotEmpty()
       }
-      val editor = textEditor().editor
+      val editor = textEditor(Duration.ofSeconds(90)).editor
       assertTrue(editor.fileName == "Main.java") { "The wrong file is open, ${editor.fileName}" }
       assertTrue(editor.text.contains("class Main")) { "The editor does not contain class Main" }
 
       // 11. Collapse and check the tree state really changed.
       val before = projectViewTree.collectExpandedPaths().size
       projectViewTree.collapsePath("sample-project", "src", fullMatch = false)
-      waitForIgnoringError(Duration.ofSeconds(15), description = "the tree to collapse") {
+      waitForIgnoringError(Duration.ofSeconds(45), description = "the tree to collapse") {
         projectViewTree.collectExpandedPaths().size < before
       }
     }

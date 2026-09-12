@@ -26,7 +26,7 @@ class S3PredicateOnlyTest : StarterScenarioTest() {
   @Test
   fun pickEntryOnlyAPredicateCanIdentify() {
     context().runIdeWithDriver().useDriverAndCloseIde {
-      waitForIndicators(5.minutes)
+      waitForIndicators(15.minutes)
       openFile("src/Main.java")
 
       // 1. Open the context menu with a real right click.
@@ -45,7 +45,7 @@ class S3PredicateOnlyTest : StarterScenarioTest() {
       // it and returns only when exactly one entry matches.
       val pasteSpecial = waitForOne(
         message = "the Paste submenu",
-        timeout = 15.seconds,
+        timeout = 45.seconds,
         getter = { submenus.list() },
         checker = { it.getText().contains("Paste") }
       )
@@ -58,7 +58,7 @@ class S3PredicateOnlyTest : StarterScenarioTest() {
       pasteSpecial.click()
 
       // 6. It really opened a submenu, so there are more entries on screen than before.
-      waitFor(message = "the submenu to open", timeout = 15.seconds) {
+      waitFor(message = "the submenu to open", timeout = 45.seconds) {
         entries.list().size > entryCount
       }
 

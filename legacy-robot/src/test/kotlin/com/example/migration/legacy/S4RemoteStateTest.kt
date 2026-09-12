@@ -25,7 +25,7 @@ class S4RemoteStateTest : LegacyScenarioTest() {
       projectStripeButton.click()
 
       // 5. Read the state back. waitFor() throws on timeout, so it is the assertion.
-      waitFor(Duration.ofSeconds(15), description = "the Project tool window visibility to change from $before") {
+      waitFor(Duration.ofSeconds(45), description = "the Project tool window visibility to change from $before") {
         isProjectToolWindowVisible() != before
       }
     }

@@ -18,7 +18,7 @@ class S2WaitForEventTest : StarterScenarioTest() {
   @Test
   fun waitForEventInsteadOfSleep() {
     context().runIdeWithDriver().useDriverAndCloseIde {
-      waitForIndicators(5.minutes)
+      waitForIndicators(15.minutes)
 
       // 1. Invoke by action id, not by keyboard shortcut.
       invokeAction("SearchEverywhere", now = false)

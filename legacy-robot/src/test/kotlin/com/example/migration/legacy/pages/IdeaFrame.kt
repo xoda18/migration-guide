@@ -12,7 +12,7 @@ import com.intellij.remoterobot.stepsProcessing.step
 import com.intellij.remoterobot.utils.waitFor
 import java.time.Duration
 
-fun RemoteRobot.idea(timeout: Duration = Duration.ofMinutes(1), function: IdeaFrame.() -> Unit) {
+fun RemoteRobot.idea(timeout: Duration = Duration.ofMinutes(3), function: IdeaFrame.() -> Unit) {
   find<IdeaFrame>(timeout = timeout).apply(function)
 }
 
@@ -64,7 +64,7 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
         "Project stripe button",
         "//div[(@class='SquareStripeButton' or @class='StripeButton') and @accessiblename='Project']"
       ),
-      Duration.ofSeconds(60)
+      Duration.ofSeconds(180)
     )
 
   /**

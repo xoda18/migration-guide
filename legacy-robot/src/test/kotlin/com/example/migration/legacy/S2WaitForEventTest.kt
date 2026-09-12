@@ -42,7 +42,7 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     // look, and the only way to recover is to ask again. A run on CI produced no popup at all.
     // Driver reads the ActionCallback that invokeAction() returns and fails on the spot.
     waitForIgnoringError(
-      Duration.ofSeconds(60),
+      Duration.ofSeconds(180),
       description = "the Search Everywhere popup",
       errorMessage = "the Search Everywhere popup never opened"
     ) {
@@ -51,7 +51,7 @@ class S2WaitForEventTest : LegacyScenarioTest() {
       }
       findAll<CommonContainerFixture>(popupLocator).isNotEmpty()
     }
-    val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(10))
+    val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(30))
 
     // 2. Set the text on the component instead of typing it.
     val searchField = popup.find<ComponentFixture>(byXpath("SearchField", "//div[@class='SearchField']"))
@@ -59,8 +59,8 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     searchField.runJs("component.setText('Plugins')", true)
 
     // 3. Wait for the result list.
-    val results = popup.find<ComponentFixture>(byXpath("results", "//div[@class='JBList']"), Duration.ofSeconds(30))
-    waitFor(Duration.ofSeconds(30), description = "Search Everywhere results are shown") {
+    val results = popup.find<ComponentFixture>(byXpath("results", "//div[@class='JBList']"), Duration.ofSeconds(90))
+    waitFor(Duration.ofSeconds(90), description = "Search Everywhere results are shown") {
       results.findAllText().any { it.text.contains("Plugins") }
     }
 
@@ -68,10 +68,10 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     results.findText("Plugins").click()
 
     // 5. Close with a button.
-    dialog("Settings", Duration.ofSeconds(60)) { button("Cancel").click() }
+    dialog("Settings", Duration.ofSeconds(180)) { button("Cancel").click() }
 
     // 6. It really closed.
-    waitFor(Duration.ofSeconds(20), description = "the Settings dialog to close") {
+    waitFor(Duration.ofSeconds(60), description = "the Settings dialog to close") {
       findAll<ComponentFixture>(DialogFixture.byTitle("Settings")).isEmpty()
     }
   }

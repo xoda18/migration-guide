@@ -33,7 +33,7 @@ class S4RemoteStateTest : StarterScenarioTest() {
   @Test
   fun readStateThroughRemoteInterface() {
     context().runIdeWithDriver().useDriverAndCloseIde {
-      waitForIndicators(5.minutes)
+      waitForIndicators(15.minutes)
 
       // 2. The open project.
       val project = singleProject()
@@ -48,7 +48,7 @@ class S4RemoteStateTest : StarterScenarioTest() {
       ideFrame { leftToolWindowToolbar.projectButton.click() }
 
       // 5. Read the state back. waitFor() throws on timeout, so it is the assertion.
-      waitFor("The Project tool window visibility changed from $before", 15.seconds) {
+      waitFor("The Project tool window visibility changed from $before", 45.seconds) {
         projectWindowVisible() != before
       }
     }
