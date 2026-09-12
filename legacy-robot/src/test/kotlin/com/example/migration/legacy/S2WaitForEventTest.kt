@@ -53,24 +53,38 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     }
     val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(30))
 
-    // 2. Set the text on the component instead of typing it.
+    // 2. Switch to the Actions tab. On the All tab this query also matches the contents of files,
+    // and such a result is clickable exactly like the action: a run on CI opened maven-4.0.0.xsd
+    // at the line that happens to contain the word. The tab here is a piece of rendered text to
+    // click, and the only way to read back which tab won is another JavaScript call. Driver has
+    // selectTab() and a typed getSelectedTab() returning an enum.
+    popup.findText("Actions").click()
+    waitForIgnoringError(
+      Duration.ofSeconds(90),
+      description = "the Actions tab to be selected",
+      errorMessage = "Search Everywhere stayed on another tab"
+    ) {
+      popup.callJs<String>("component.getSelectedTabID()", true) == "ActionSearchEverywhereContributor"
+    }
+
+    // 3. Set the text on the component instead of typing it.
     val searchField = popup.find<ComponentFixture>(byXpath("SearchField", "//div[@class='SearchField']"))
     searchField.click()
     searchField.runJs("component.setText('Plugins')", true)
 
-    // 3. Wait for the result list.
+    // 4. Wait for the result list.
     val results = popup.find<ComponentFixture>(byXpath("results", "//div[@class='JBList']"), Duration.ofSeconds(90))
     waitFor(Duration.ofSeconds(90), description = "Search Everywhere results are shown") {
       results.findAllText().any { it.text.contains("Plugins") }
     }
 
-    // 4. Click the result by text, not by position.
+    // 5. Click the result by text, not by position.
     results.findText("Plugins").click()
 
-    // 5. Close with a button.
+    // 6. Close with a button.
     dialog("Settings", Duration.ofSeconds(180)) { button("Cancel").click() }
 
-    // 6. It really closed.
+    // 7. It really closed.
     waitFor(Duration.ofSeconds(60), description = "the Settings dialog to close") {
       findAll<ComponentFixture>(DialogFixture.byTitle("Settings")).isEmpty()
     }

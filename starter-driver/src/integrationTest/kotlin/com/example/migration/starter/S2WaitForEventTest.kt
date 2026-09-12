@@ -3,6 +3,7 @@ package com.example.migration.starter
 import com.intellij.driver.sdk.invokeAction
 import com.intellij.driver.sdk.ui.components.UiComponent.Companion.waitFound
 import com.intellij.driver.sdk.ui.components.common.ideFrame
+import com.intellij.driver.sdk.ui.components.common.popups.SearchEverywherePopupUI.SearchEverywhereTab
 import com.intellij.driver.sdk.ui.components.common.popups.searchEverywherePopup
 import com.intellij.driver.sdk.ui.components.settings.settingsDialog
 import com.intellij.driver.sdk.ui.shouldBe
@@ -25,25 +26,33 @@ class S2WaitForEventTest : StarterScenarioTest() {
 
       val query = "Plugins"
       ui.searchEverywherePopup {
-        // 2. Type the query.
+        // 2. Switch to the Actions tab. On the All tab this query also matches the contents of
+        // files, and such a result is clickable exactly like the action, so the ambiguity is
+        // removed here instead of being worked around in step 5.
+        selectTab("Actions")
+        shouldBe("the Actions tab is selected") {
+          searchEverywhereUi.getSelectedTabID() == SearchEverywhereTab.Actions.id
+        }
+
+        // 3. Type the query.
         searchField.text = query
 
-        // 3. Wait for the entry to appear. No sleep, no assertion on result count or order.
+        // 4. Wait for the entry to appear. No sleep, no assertion on result count or order.
         resultsList.shouldBe("'$query' is among the Search Everywhere results") {
           items.any { it.contains(query) }
         }
 
-        // 4. Click the result by text, not by position.
+        // 5. Click the result by text, not by position.
         resultsList.clickItem(query, fullMatch = false)
       }
 
-      // 5. Close the dialog with a button.
+      // 6. Close the dialog with a button.
       ideFrame {
         settingsDialog {
           waitFound()
           cancelButton.click()
 
-          // 6. It really closed.
+          // 7. It really closed.
           shouldBe("The Settings dialog is closed") { notPresent() }
         }
       }
