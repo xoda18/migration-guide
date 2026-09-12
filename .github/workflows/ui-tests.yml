@@ -66,8 +66,8 @@ jobs:
           include-hidden-files: true
           path: |
             starter-driver/build/reports/
+            out/ide-tests/tests/**/log/**
             starter-driver/out/ide-tests/tests/**/log/**
-            starter-driver/out/ide-tests/tests/**/*.png
           if-no-files-found: ignore
 
   legacy-robot:
