@@ -106,6 +106,21 @@ class IdeaFrame(remoteRobot: RemoteRobot, remoteComponent: RemoteComponent) :
     """, true
   )
 
+  /**
+   * Whether this window still holds a project that is alive.
+   *
+   * Closing a project is asynchronous, and for a while afterwards the window is still there with
+   * a project that is on its way out. Anything called on it then fails with
+   * AlreadyDisposedException, so the cleanup in LegacyScenarioTest waits for this to turn false.
+   */
+  fun hasLiveProject(): Boolean = callJs(
+    """
+      const frameHelper = com.intellij.openapi.wm.impl.ProjectFrameHelper.getFrameHelper(component)
+      const project = frameHelper ? frameHelper.getProject() : null
+      project != null && !project.isDisposed()
+    """, true
+  )
+
   /** The equivalent of the Driver ToolWindowManager @Remote interface used in S4. */
   fun isProjectToolWindowVisible(): Boolean = callJs(
     """

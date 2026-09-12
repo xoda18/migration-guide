@@ -79,7 +79,7 @@ migration-guide/
 |---|---|---|
 | Who starts the IDE | the test | a Gradle task, in another terminal |
 | Commands to run one test | one | two |
-| Cleanup between tests | the IDE is thrown away | the test closes the project itself |
+| Cleanup between tests | the IDE is thrown away | the test closes the project and waits for it to be gone |
 | Reading IDE state | typed `@Remote` interface | a JavaScript string sent to `callJs()` |
 | Component locators | typed query builder, `byType()`, `byClass()` | raw xpath strings |
 | Waiting | `waitFor()`, `waitForOne()`, `shouldBe()`, `waitForIndicators()` | `waitFor()` and `waitForIgnoringError()`, everything else by hand |
