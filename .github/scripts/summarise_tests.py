@@ -2,18 +2,48 @@
 
 Without this the Actions page shows only a green or red mark, and a build that ran no
 tests at all looks exactly like a build where every scenario passed.
+
+When the screen recording is on, each row also carries the point in screen.mp4 where that
+scenario starts, so a twelve minute video does not have to be watched from the beginning.
 """
 
+import datetime
 import glob
 import subprocess
 import xml.etree.ElementTree as ElementTree
 
+
+def recording_start():
+    """Epoch second at which ffmpeg began, or None when nothing was recorded."""
+    try:
+        with open("ffmpeg.start") as handle:
+            return float(handle.read().strip())
+    except (OSError, ValueError):
+        return None
+
+
+def offset(timestamp, start):
+    """Position of this scenario in the recording, as mm:ss."""
+    if start is None or not timestamp:
+        return ""
+    try:
+        began = datetime.datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    except ValueError:
+        return ""
+    seconds = int(began.timestamp() - start)
+    if seconds < 0:
+        return ""
+    return f"{seconds // 60:02d}:{seconds % 60:02d}"
+
+
+start = recording_start()
 rows = []
 for path in sorted(glob.glob("*/build/test-results/**/*.xml", recursive=True)):
     try:
         root = ElementTree.parse(path).getroot()
     except ElementTree.ParseError:
         continue
+    at = offset(root.get("timestamp"), start)
     for case in root.iter("testcase"):
         broke = case.find("failure") is not None or case.find("error") is not None
         name = (case.get("classname") or "?").rsplit(".", 1)[-1]
@@ -23,9 +53,11 @@ for path in sorted(glob.glob("*/build/test-results/**/*.xml", recursive=True)):
             if node is None:
                 node = case.find("error")
             detail = (node.get("message") or "").split("\n")[0][:160]
-        rows.append((name, broke, case.get("time") or "?", detail))
+        rows.append((at, name, broke, case.get("time") or "?", detail))
 
-passed = sum(1 for _, broke, _, _ in rows if not broke)
+rows.sort()
+passed = sum(1 for row in rows if not row[2])
+
 if not rows:
     print("### No scenarios ran")
     print()
@@ -33,10 +65,13 @@ if not rows:
 else:
     print(f"### {passed} of {len(rows)} scenarios passed")
     print()
-    print("| Scenario | Result | Time | Message |")
-    print("|---|---|---|---|")
-    for name, broke, seconds, detail in rows:
-        print(f"| {name} | {'fail' if broke else 'pass'} | {seconds}s | {detail} |")
+    print("| Video at | Scenario | Result | Time | Message |")
+    print("|---|---|---|---|---|")
+    for at, name, broke, seconds, detail in rows:
+        print(f"| {at or '-'} | {name} | {'fail' if broke else 'pass'} | {seconds}s | {detail} |")
+    if start is not None:
+        print()
+        print("Video at is the position in `screen.mp4`, in the recording artifact.")
 
 print()
 disk = subprocess.run(["df", "-h", "/"], capture_output=True, text=True).stdout.strip()
