@@ -28,7 +28,11 @@ class S3PredicateOnlyTest : LegacyScenarioTest() {
       // defaults to a five second search, and that is short for a machine under load: on CI it
       // ran out while the editor was still coming up, and the screenshot taken at that moment
       // already showed the file open.
-      waitForIgnoringError(Duration.ofSeconds(60), description = "the editor to open") {
+      waitForIgnoringError(
+        Duration.ofSeconds(60),
+        description = "the editor to open",
+        errorMessage = "no editor ever appeared for src/Main.java"
+      ) {
         textEditors().isNotEmpty()
       }
       bringToFront()
