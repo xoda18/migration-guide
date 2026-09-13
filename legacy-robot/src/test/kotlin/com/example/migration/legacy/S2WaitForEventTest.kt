@@ -50,9 +50,7 @@ class S2WaitForEventTest : LegacyScenarioTest() {
     }
     val popup = find<CommonContainerFixture>(popupLocator, Duration.ofSeconds(30))
 
-    // 2. Switch to the Actions tab. On the All tab the query also matches file contents, and
-    // such a result is clickable exactly like the action. The tab is rendered text to click, and
-    // reading back which one won takes JavaScript. Driver has selectTab() and getSelectedTab().
+    // 2. Switch to the Actions tab.
     popup.findText("Actions").click()
     waitForIgnoringError(
       Duration.ofSeconds(90),

@@ -42,8 +42,6 @@ jobs:
         run: bash .github/scripts/record-screen.sh start
 
       - name: Run the scenarios
-        env:
-          JETBRAINS_LICENSE_SERVER: http://127.0.0.1:1
         run: ./gradlew :starter-driver:integrationTest
 
       - name: Stop recording the screen
