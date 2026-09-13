@@ -9,6 +9,8 @@ import com.intellij.ide.starter.project.LocalProjectInfo
 import com.intellij.ide.starter.runner.CurrentTestMethod
 import com.intellij.ide.starter.runner.Starter
 import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createFile
 
 /** Shared setup. Every test builds its own context and starts its own IDE. */
 abstract class StarterScenarioTest {
@@ -33,6 +35,19 @@ abstract class StarterScenarioTest {
         addSystemProperty("shared.indexes.download.auto.consent", true)
       }
       .addProjectToTrustedLocations()
+      .also { skipAutoTrial(it) }
+
+  /**
+   * Every scenario gets a fresh config directory, so the IDE sees a new user every time and
+   * starts a free trial a few seconds in, which opens a page over the editor in the middle of a
+   * scenario. The scenarios need none of the paid functionality. TrialStateUtils skips the
+   * trial when this marker is in the config directory.
+   */
+  private fun skipAutoTrial(context: IDETestContext) {
+    val configDir = context.paths.configDir
+    configDir.createDirectories()
+    configDir.resolve(".ce_migration_attempted").createFile()
+  }
 
   private fun requiredProperty(name: String): String =
     checkNotNull(System.getProperty(name)?.takeIf { it.isNotBlank() }) {
