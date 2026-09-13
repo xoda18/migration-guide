@@ -26,9 +26,7 @@ class S2WaitForEventTest : StarterScenarioTest() {
 
       val query = "Plugins"
       ui.searchEverywherePopup {
-        // 2. Switch to the Actions tab. On the All tab this query also matches the contents of
-        // files, and such a result is clickable exactly like the action, so the ambiguity is
-        // removed here instead of being worked around in step 5.
+        // 2. Switch to the Actions tab.
         selectTab("Actions")
         shouldBe("the Actions tab is selected") {
           searchEverywhereUi.getSelectedTabID() == SearchEverywhereTab.Actions.id
