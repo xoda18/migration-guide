@@ -7,6 +7,7 @@ import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.fixtures.CommonContainerFixture
 import com.intellij.remoterobot.fixtures.ComponentFixture
 import com.intellij.remoterobot.search.locators.byXpath
+import com.intellij.remoterobot.utils.keyboard
 import com.intellij.remoterobot.utils.waitFor
 import com.intellij.remoterobot.utils.waitForIgnoringError
 import org.junit.jupiter.api.Test
@@ -60,10 +61,10 @@ class S2WaitForEventTest : LegacyScenarioTest() {
       popup.callJs<String>("component.getSelectedTabID()", true) == "ActionSearchEverywhereContributor"
     }
 
-    // 3. Set the text on the component instead of typing it.
+    // 3. Type the query.
     val searchField = popup.find<ComponentFixture>(byXpath("SearchField", "//div[@class='SearchField']"))
     searchField.click()
-    searchField.runJs("component.setText('Plugins')", true)
+    keyboard { enterText("Plugins") }
 
     // 4. Wait for the result list.
     val results = popup.find<ComponentFixture>(byXpath("results", "//div[@class='JBList']"), Duration.ofSeconds(90))

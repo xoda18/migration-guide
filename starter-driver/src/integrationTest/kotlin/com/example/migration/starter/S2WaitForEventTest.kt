@@ -33,7 +33,8 @@ class S2WaitForEventTest : StarterScenarioTest() {
         }
 
         // 3. Type the query.
-        searchField.text = query
+        searchField.click()
+        keyboard { typeText(query) }
 
         // 4. Wait for the entry to appear. No sleep, no assertion on result count or order.
         resultsList.shouldBe("'$query' is among the Search Everywhere results") {

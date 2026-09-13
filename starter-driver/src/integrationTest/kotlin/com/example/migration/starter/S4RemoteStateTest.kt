@@ -44,7 +44,8 @@ class S4RemoteStateTest : StarterScenarioTest() {
       val projectWindowVisible = { toolWindowManager.getToolWindow("Project")?.isVisible() ?: false }
       val before = projectWindowVisible()
 
-      // 4. A real click
+      // 4. A real click. Not open(): it invokes the action behind the tool window instead of
+      // clicking, and does nothing at all when the window is already active.
       ideFrame { leftToolWindowToolbar.projectButton.click() }
 
       // 5. Read the state back. waitFor() throws on timeout, so it is the assertion.

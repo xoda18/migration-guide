@@ -76,9 +76,9 @@ class S1LaunchAndReadinessTest : LegacyScenarioTest() {
       // 9. Open the file with a real double click.
       projectViewTree.doubleClickPath("sample-project", "src", "Main", fullMatch = false)
 
-      // 10. The right file opened. There is no editor tabs fixture, so this asks the editor for
-      // its file name through another JS call. textEditor() carries its own five second search,
-      // so the wait before it looks for the same component.
+      // 10. The right file opened. The library has no fixture for editor tabs, so the test asks
+      // the editor for its file name, and that is one more JS call. The wait and textEditor()
+      // look for the same component, so both are given the same long timeout.
       waitForIgnoringError(Duration.ofSeconds(90), description = "the editor to open") {
         textEditors().isNotEmpty()
       }
