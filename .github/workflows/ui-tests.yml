@@ -19,6 +19,8 @@ jobs:
     name: Starter and Driver
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v4
 
@@ -80,3 +82,12 @@ jobs:
             out/ide-tests/tests/**/log/**
             starter-driver/out/ide-tests/tests/**/log/**
           if-no-files-found: ignore
+
+      - name: Tell Slack
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: ":x: UI tests failed: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run ${{ github.run_number }}> on ${{ github.ref_name }}"
