@@ -26,7 +26,7 @@ class S3PredicateOnlyTest : StarterScenarioTest() {
   @Test
   fun pickEntryOnlyAPredicateCanIdentify() {
     context().runIdeWithDriver().useDriverAndCloseIde {
-      waitForIndicators(15.minutes)
+      waitForIndicators(5.minutes)
       openFile("src/Main.java")
 
       // 1. Open the context menu with a real right click.

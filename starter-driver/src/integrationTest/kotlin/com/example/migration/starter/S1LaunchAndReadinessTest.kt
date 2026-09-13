@@ -30,7 +30,7 @@ class S1LaunchAndReadinessTest : StarterScenarioTest() {
       assertTrue(isPluginLoaded(pluginUnderTestId)) { "$pluginUnderTestId was not loaded" }
 
       // 4. Wait for indexing and every background indicator.
-      waitForIndicators(15.minutes)
+      waitForIndicators(5.minutes)
 
       ideFrame {
         // 5. A project is open.

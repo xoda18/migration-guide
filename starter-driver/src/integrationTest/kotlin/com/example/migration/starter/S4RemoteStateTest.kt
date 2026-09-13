@@ -33,7 +33,7 @@ class S4RemoteStateTest : StarterScenarioTest() {
   @Test
   fun readStateThroughRemoteInterface() {
     context().runIdeWithDriver().useDriverAndCloseIde {
-      waitForIndicators(15.minutes)
+      waitForIndicators(5.minutes)
 
       // 2. The open project.
       val project = singleProject()
