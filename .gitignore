@@ -13,14 +13,10 @@ build/
 out/
 allure-results/
 
-# IDE state. sample-project/.idea is a fixture and stays checked in.
+# IDE state
 /.idea/
 .junie/
 *.iws
-
-# Per-machine parts of the fixture project
-sample-project/.idea/workspace.xml
-sample-project/.idea/misc.xml
 
 # OS
 .DS_Store

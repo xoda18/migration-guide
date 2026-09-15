@@ -7,7 +7,7 @@ Both sides drive IntelliJ IDEA 2026.1.
 * `starter-driver/` uses [Starter and Driver](https://plugins.jetbrains.com/docs/intellij/integration-tests-intro.html), the current framework.
 * `legacy-robot/` uses [intellij-ui-test-robot](https://github.com/JetBrains/intellij-ui-test-robot), the older one, following the syntax of its [ui-test-example](https://github.com/JetBrains/intellij-ui-test-robot/tree/master/ui-test-example).
 
-Both open the same `sample-project/`, do the same things and assert the same facts.
+Both open the same project, [ui-test-sample-project](https://github.com/xoda18/ui-test-sample-project), do the same things and assert the same facts. Gradle downloads it, so there is nothing to clone by hand.
 Every scenario file is commented step by step, and the tables below link straight to those steps.
 
 ## Contents
@@ -51,7 +51,7 @@ The legacy side is two commands in two terminals, because the IDE is a separate 
 
 ```text
 migration-guide/
-  sample-project/                     the project both sides open
+  build/sample-project/               the project both sides open, downloaded by Gradle
   starter-driver/
     src/integrationTest/kotlin/.../starter/
       StarterScenarioTest.kt          shared setup, this is step 1 of S1

@@ -61,5 +61,6 @@ intellijPlatformTesting.runIde.register("runIdeForUiTests") {
 tasks.test {
   useJUnitPlatform()
 
-  systemProperty("sample.project.dir", rootProject.layout.projectDirectory.dir("sample-project").asFile.absolutePath)
+  dependsOn(":downloadSampleProject")
+  systemProperty("sample.project.dir", rootProject.layout.buildDirectory.dir("sample-project").get().asFile.absolutePath)
 }
