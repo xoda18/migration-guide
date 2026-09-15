@@ -5,4 +5,4 @@ plugins {
 rootProject.name = "migration-guide"
 
 include("starter-driver")
-include("legacy-robot")
+include("remote-robot")

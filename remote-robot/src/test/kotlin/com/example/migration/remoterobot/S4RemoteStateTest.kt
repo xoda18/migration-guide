@@ -1,6 +1,6 @@
-package com.example.migration.legacy
+package com.example.migration.remoterobot
 
-import com.example.migration.legacy.pages.idea
+import com.example.migration.remoterobot.pages.idea
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.utils.waitFor
 import org.junit.jupiter.api.Test
@@ -10,7 +10,7 @@ import java.time.Duration
  * S4. Read IDE state. The only way in is a JavaScript string evaluated inside the IDE. It is
  * not compiled, not checked against the IntelliJ Platform API, and not reachable by a refactoring.
  */
-class S4RemoteStateTest : LegacyScenarioTest() {
+class S4RemoteStateTest : RemoteRobotScenarioTest() {
 
   @Test
   fun readStateThroughJavaScript(remoteRobot: RemoteRobot) = with(remoteRobot) {

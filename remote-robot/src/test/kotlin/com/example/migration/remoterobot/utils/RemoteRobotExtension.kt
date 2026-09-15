@@ -1,4 +1,4 @@
-package com.example.migration.legacy.utils
+package com.example.migration.remoterobot.utils
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.fixtures.ContainerFixture

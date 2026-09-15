@@ -1,7 +1,7 @@
-package com.example.migration.legacy
+package com.example.migration.remoterobot
 
-import com.example.migration.legacy.pages.idea
-import com.example.migration.legacy.pages.isPluginEnabled
+import com.example.migration.remoterobot.pages.idea
+import com.example.migration.remoterobot.pages.isPluginEnabled
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.steps.CommonSteps
 import com.intellij.remoterobot.utils.waitForIgnoringError
@@ -15,7 +15,7 @@ import java.time.Duration
  * Only part of this scenario can live in the test. Launching the IDE and installing the plugin
  * happen in Gradle, before this process starts.
  */
-class S1LaunchAndReadinessTest : LegacyScenarioTest() {
+class S1LaunchAndReadinessTest : RemoteRobotScenarioTest() {
 
   @Test
   fun launchProjectPluginReadiness(remoteRobot: RemoteRobot) = with(remoteRobot) {

@@ -1,9 +1,9 @@
-package com.example.migration.legacy
+package com.example.migration.remoterobot
 
-import com.example.migration.legacy.pages.IdeaFrame
-import com.example.migration.legacy.pages.idea
-import com.example.migration.legacy.utils.RemoteRobotExtension
-import com.example.migration.legacy.utils.StepsLogger
+import com.example.migration.remoterobot.pages.IdeaFrame
+import com.example.migration.remoterobot.pages.idea
+import com.example.migration.remoterobot.utils.RemoteRobotExtension
+import com.example.migration.remoterobot.utils.StepsLogger
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.steps.CommonSteps
 import com.intellij.remoterobot.utils.waitForIgnoringError
@@ -17,7 +17,7 @@ import java.time.Duration
  * about the product, the version or the plugin under test in this file.
  */
 @ExtendWith(RemoteRobotExtension::class)
-abstract class LegacyScenarioTest {
+abstract class RemoteRobotScenarioTest {
 
   init {
     StepsLogger.init()
@@ -26,7 +26,7 @@ abstract class LegacyScenarioTest {
   protected val pluginUnderTestId = "com.example.migration.sample"
 
   protected val sampleProjectPath: String = checkNotNull(System.getProperty("sample.project.dir")) {
-    "System property 'sample.project.dir' is not set. Run ./gradlew :legacy-robot:test"
+    "System property 'sample.project.dir' is not set. Run ./gradlew :Remote Robot-robot:test"
   }
 
   /**

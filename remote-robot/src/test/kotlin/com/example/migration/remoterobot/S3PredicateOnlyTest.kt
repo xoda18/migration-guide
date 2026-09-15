@@ -1,8 +1,8 @@
-package com.example.migration.legacy
+package com.example.migration.remoterobot
 
-import com.example.migration.legacy.pages.allMenuItems
-import com.example.migration.legacy.pages.allSubmenus
-import com.example.migration.legacy.pages.idea
+import com.example.migration.remoterobot.pages.allMenuItems
+import com.example.migration.remoterobot.pages.allSubmenus
+import com.example.migration.remoterobot.pages.idea
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.utils.keyboard
 import com.intellij.remoterobot.utils.waitForIgnoringError
@@ -16,7 +16,7 @@ import java.time.Duration
  * Copy / Paste Special, and only the component class separates them. Exact labels are no help
  * either: Rename… ends in a real ellipsis character and Run 'Main.main()' is built at runtime.
  */
-class S3PredicateOnlyTest : LegacyScenarioTest() {
+class S3PredicateOnlyTest : RemoteRobotScenarioTest() {
 
   @Test
   fun pickEntryOnlyAPredicateCanIdentify(remoteRobot: RemoteRobot) = with(remoteRobot) {

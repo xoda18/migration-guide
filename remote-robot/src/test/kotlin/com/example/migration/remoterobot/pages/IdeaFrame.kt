@@ -1,4 +1,4 @@
-package com.example.migration.legacy.pages
+package com.example.migration.remoterobot.pages
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.data.RemoteComponent

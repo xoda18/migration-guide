@@ -1,8 +1,8 @@
-package com.example.migration.legacy
+package com.example.migration.remoterobot
 
-import com.example.migration.legacy.pages.DialogFixture
-import com.example.migration.legacy.pages.dialog
-import com.example.migration.legacy.pages.idea
+import com.example.migration.remoterobot.pages.DialogFixture
+import com.example.migration.remoterobot.pages.dialog
+import com.example.migration.remoterobot.pages.idea
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.fixtures.CommonContainerFixture
 import com.intellij.remoterobot.fixtures.ComponentFixture
@@ -17,7 +17,7 @@ import java.time.Duration
  * S2. Wait for an event instead of sleeping. Same idea as the Driver side, except every wait
  * has to be written out: there is no shouldBe(), and no handle on the dialog to check again.
  */
-class S2WaitForEventTest : LegacyScenarioTest() {
+class S2WaitForEventTest : RemoteRobotScenarioTest() {
 
   @Test
   fun waitForEventInsteadOfSleep(remoteRobot: RemoteRobot) = with(remoteRobot) {

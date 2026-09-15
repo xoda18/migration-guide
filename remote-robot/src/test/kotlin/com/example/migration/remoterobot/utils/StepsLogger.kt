@@ -1,4 +1,4 @@
-package com.example.migration.legacy.utils
+package com.example.migration.remoterobot.utils
 
 import com.intellij.remoterobot.stepsProcessing.StepLogger
 import com.intellij.remoterobot.stepsProcessing.StepWorker

@@ -1,14 +1,14 @@
-package com.example.migration.legacy
+package com.example.migration.remoterobot
 
-import com.example.migration.legacy.pages.idea
-import com.example.migration.legacy.pages.projectPanel
+import com.example.migration.remoterobot.pages.idea
+import com.example.migration.remoterobot.pages.projectPanel
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.utils.waitForIgnoringError
 import org.junit.jupiter.api.Test
 import java.time.Duration
 
 /** S5. Use the page object from pages/ProjectPanelFixture.kt. */
-class S5PageObjectTest : LegacyScenarioTest() {
+class S5PageObjectTest : RemoteRobotScenarioTest() {
 
   @Test
   fun ownPageObject(remoteRobot: RemoteRobot) = with(remoteRobot) {

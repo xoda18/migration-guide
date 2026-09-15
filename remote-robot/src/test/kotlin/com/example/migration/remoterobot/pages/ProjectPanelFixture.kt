@@ -1,4 +1,4 @@
-package com.example.migration.legacy.pages
+package com.example.migration.remoterobot.pages
 
 import com.intellij.remoterobot.RemoteRobot
 import com.intellij.remoterobot.data.RemoteComponent
@@ -11,7 +11,7 @@ import com.intellij.remoterobot.search.locators.byXpath
 import java.time.Duration
 
 /**
- * The legacy shape of a page object. Compare with starter-driver pages/ProjectPanelUi.kt:
+ * The Remote Robot shape of a page object. Compare with starter-driver pages/ProjectPanelUi.kt:
  * CommonContainerFixture instead of UiComponent, a RemoteComponent instead of ComponentData,
  * and a raw xpath in an annotation instead of a typed query. Nothing checks that xpath until
  * the test runs.
