@@ -7,7 +7,7 @@ Both sides drive IntelliJ IDEA 2026.1.
 * `starter-driver/` uses [Starter and Driver](https://plugins.jetbrains.com/docs/intellij/integration-tests-intro.html), the current framework.
 * `legacy-robot/` uses [intellij-ui-test-robot](https://github.com/JetBrains/intellij-ui-test-robot), the older one, following the syntax of its [ui-test-example](https://github.com/JetBrains/intellij-ui-test-robot/tree/master/ui-test-example).
 
-Both open the same project, [ui-test-sample-project](https://github.com/xoda18/ui-test-sample-project), do the same things and assert the same facts. Gradle downloads it, so there is nothing to clone by hand.
+Both open the same project, [sample-project](https://github.com/xoda18/sample-project), do the same things and assert the same facts. Nothing to clone by hand: Starter checks the project out itself, and for the legacy side Gradle downloads it.
 Every scenario file is commented step by step, and the tables below link straight to those steps.
 
 ## Contents
@@ -51,7 +51,7 @@ The legacy side is two commands in two terminals, because the IDE is a separate 
 
 ```text
 migration-guide/
-  build/sample-project/               the project both sides open, downloaded by Gradle
+  build/sample-project/               the project, downloaded by Gradle for the legacy side
   starter-driver/
     src/integrationTest/kotlin/.../starter/
       StarterScenarioTest.kt          shared setup, this is step 1 of S1
@@ -94,7 +94,7 @@ Starter: [S1LaunchAndReadinessTest.kt](starter-driver/src/integrationTest/kotlin
 
 | Step | Starter and Driver | Legacy robot | What changed |
 |---|---|---|---|
-| 1. Build the context | [L23](starter-driver/src/integrationTest/kotlin/com/example/migration/starter/S1LaunchAndReadinessTest.kt#L23) | [L22](legacy-robot/src/test/kotlin/com/example/migration/legacy/S1LaunchAndReadinessTest.kt#L22) | On the Starter side the product, the version, the project and the plugin are values in Kotlin. On the legacy side there is no step 1: it lives in `build.gradle.kts`, outside anything the test can read or assert. |
+| 1. Build the context | [L23](starter-driver/src/integrationTest/kotlin/com/example/migration/starter/S1LaunchAndReadinessTest.kt#L23) | [L22](legacy-robot/src/test/kotlin/com/example/migration/legacy/S1LaunchAndReadinessTest.kt#L22) | On the Starter side the product, the version, the project and the plugin are values in Kotlin, and `GitHubProject.fromGithub()` checks the project out on its own. On the legacy side there is no step 1: all of it lives in `build.gradle.kts`, outside anything the test can read or assert, and the project has to be on disk before the test starts. |
 | 2. Start the IDE, open the project | [L26](starter-driver/src/integrationTest/kotlin/com/example/migration/starter/S1LaunchAndReadinessTest.kt#L26) | [L24](legacy-robot/src/test/kotlin/com/example/migration/legacy/S1LaunchAndReadinessTest.kt#L24) | Starter installs the plugin, drops `.idea` and every `.iml`, starts the IDE and shuts it down when the test finishes. Legacy can only open a project, and it opens whatever `.idea` happens to be on disk. |
 | 3. Is the plugin loaded | [L29](starter-driver/src/integrationTest/kotlin/com/example/migration/starter/S1LaunchAndReadinessTest.kt#L29) | [L27](legacy-robot/src/test/kotlin/com/example/migration/legacy/S1LaunchAndReadinessTest.kt#L27) | `isPluginLoaded()` answers with a typed boolean. The legacy equivalent is a JavaScript string over `PluginManagerCore`, written and maintained in the test. |
 | 4. Wait for readiness | [L32](starter-driver/src/integrationTest/kotlin/com/example/migration/starter/S1LaunchAndReadinessTest.kt#L32) | [L30](legacy-robot/src/test/kotlin/com/example/migration/legacy/S1LaunchAndReadinessTest.kt#L30) | Driver has one call for it, `waitForIndicators()`: indexing, every progress bar in the status bar, and ten quiet seconds in a row. Legacy has `CommonSteps.waitForSmartMode()`, which covers indexing and nothing else, so each scenario below waits for its own component by hand. |

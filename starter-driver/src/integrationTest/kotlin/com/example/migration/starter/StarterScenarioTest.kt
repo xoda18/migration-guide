@@ -5,7 +5,7 @@ import com.intellij.ide.starter.ide.IdeProductProvider
 import com.intellij.ide.starter.junit5.hyphenateWithClass
 import com.intellij.ide.starter.models.TestCase
 import com.intellij.ide.starter.plugins.PluginConfigurator
-import com.intellij.ide.starter.project.LocalProjectInfo
+import com.intellij.ide.starter.project.GitHubProject
 import com.intellij.ide.starter.runner.CurrentTestMethod
 import com.intellij.ide.starter.runner.Starter
 import kotlin.io.path.Path
@@ -18,13 +18,15 @@ abstract class StarterScenarioTest {
   protected val pluginUnderTestId = "com.example.migration.sample"
 
   private val ideVersion = requiredProperty("ide.version")
-  private val sampleProject = Path(requiredProperty("sample.project.dir"))
   private val pluginUnderTest = Path(requiredProperty("path.to.build.plugin"))
 
   protected fun context(): IDETestContext =
     Starter.newContext(
       CurrentTestMethod.hyphenateWithClass(),
-      TestCase(IdeProductProvider.IU, LocalProjectInfo(sampleProject)).useRelease(ideVersion)
+      TestCase(
+        IdeProductProvider.IU,
+        GitHubProject.fromGithub(branchName = "main", repoRelativeUrl = "xoda18/sample-project")
+      ).useRelease(ideVersion)
     )
       .apply { PluginConfigurator(this).installPluginFromPath(pluginUnderTest) }
       .prepareProjectCleanImport()

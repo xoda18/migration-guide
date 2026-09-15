@@ -51,12 +51,7 @@ val integrationTest by intellijPlatformTesting.testIdeUi.registering {
     testClassesDirs = integrationTestSourceSet.output.classesDirs
     classpath = integrationTestSourceSet.runtimeClasspath
 
-    dependsOn(":downloadSampleProject")
     systemProperty("ide.version", ideVersion)
-    systemProperty(
-      "sample.project.dir",
-      rootProject.layout.buildDirectory.dir("sample-project").get().asFile.absolutePath
-    )
 
     useJUnitPlatform()
   }
