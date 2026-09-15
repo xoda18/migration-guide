@@ -15,21 +15,6 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
-  slack-smoke-test:
-    name: Slack smoke test
-    runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-    steps:
-      - name: Post a test message
-        if: env.SLACK_WEBHOOK_URL != ''
-        uses: slackapi/slack-github-action@v4.0.0
-        with:
-          webhook: ${{ env.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            text: ":white_check_mark: Migration Guide CI can post here. Test message from <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run ${{ github.run_number }}>, please ignore."
-
   starter-driver:
     name: Starter and Driver
     runs-on: ubuntu-latest
