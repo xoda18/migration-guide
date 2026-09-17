@@ -52,13 +52,17 @@ class S1LaunchAndReadinessTest : StarterScenarioTest() {
           assertTrue(projectViewTree.findExpandedPath("sample-project", "src", "Main", fullMatch = false) != null) { "Main is missing, the tree shows: $paths" }
           assertTrue(projectViewTree.findExpandedPath("sample-project", "src", "Util", fullMatch = false) != null) { "Util is missing, the tree shows: $paths" }
 
-          // 9. Open the file with a real double click.
-          projectViewTree.doubleClickPath("sample-project", "src", "Main", fullMatch = false)
+        }
+
+        // 9. Open the file with a real double click. The robot drops a click now and then on a
+        // loaded machine and only logs "Click was unsuccessful", so the click sits inside the wait.
+        waitFor("the Main.java tab to open", 90.seconds, interval = 5.seconds) {
+          projectView { projectViewTree.doubleClickPath("sample-project", "src", "Main", fullMatch = false) }
+          editorTabs().isTabOpened("Main.java")
         }
 
         // 10. The right file opened.
         val editor = codeEditorForFile("Main.java").waitFound()
-        assertTrue(editorTabs().isTabOpened("Main.java")) { "There is no Main.java tab" }
         assertTrue(editor.text.contains("class Main")) { "The wrong file is open in the editor" }
 
         // 11. Collapse and check the tree state really changed.

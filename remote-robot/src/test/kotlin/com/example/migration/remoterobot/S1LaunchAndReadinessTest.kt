@@ -73,15 +73,19 @@ class S1LaunchAndReadinessTest : RemoteRobotScenarioTest() {
       assertTrue(projectViewTree.isPathExists("sample-project", "src", "Main", fullMatch = false)) { "Main is missing, the tree shows: $rows" }
       assertTrue(projectViewTree.isPathExists("sample-project", "src", "Util", fullMatch = false)) { "Util is missing, the tree shows: $rows" }
 
-      // 9. Open the file with a real double click.
-      projectViewTree.doubleClickPath("sample-project", "src", "Main", fullMatch = false)
-
-      // 10. The right file opened. The library has no fixture for editor tabs, so the test asks
-      // the editor for its file name, and that is one more JS call. The wait and textEditor()
-      // look for the same component, so both are given the same long timeout.
-      waitForIgnoringError(Duration.ofSeconds(90), description = "the editor to open") {
+      // 9. Open the file with a real double click. The same dropped click as on the Starter side,
+      // and this library stays just as quiet about it, so the click sits inside the wait.
+      waitForIgnoringError(
+        Duration.ofSeconds(90),
+        Duration.ofSeconds(5),
+        description = "the editor to open"
+      ) {
+        projectViewTree.doubleClickPath("sample-project", "src", "Main", fullMatch = false)
         textEditors().isNotEmpty()
       }
+
+      // 10. The right file opened. The library has no fixture for editor tabs, so the test asks
+      // the editor for its file name, and that is one more JS call.
       val editor = textEditor(Duration.ofSeconds(90)).editor
       assertTrue(editor.fileName == "Main.java") { "The wrong file is open, ${editor.fileName}" }
       assertTrue(editor.text.contains("class Main")) { "The editor does not contain class Main" }
